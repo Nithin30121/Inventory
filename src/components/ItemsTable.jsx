@@ -1,4 +1,4 @@
-export default function ItemsTable({ items, onDelete, compact }) {
+export default function ItemsTable({ items, onDelete, compact, onAddToCart }) {
   return (
     <div className={`table-wrap ${compact ? "compact" : ""}`}>
       <table className="table">
@@ -28,20 +28,28 @@ export default function ItemsTable({ items, onDelete, compact }) {
                 <td>{it.name}</td>
                 <td>{it.category}</td>
                 <td>{it.qty}</td>
-                <td>${Number(it.price).toFixed(2)}</td>
+                <td>₹{Number(it.price).toFixed(2)}</td>
                 <td>
                   <span className={`status ${String(it.status).toLowerCase().includes("low") ? "low" : "ok"}`}>
                     {it.status}
                   </span>
                 </td>
                 <td className="right">
-                  <button
-                    className="link danger"
-                    onClick={() => onDelete?.(it.id)}
-                    type="button"
-                  >
-                    Delete
-                  </button>
+                  <div className="row-actions">
+                    <button
+                      className="link"
+                      type="button"
+                      onClick={() => onAddToCart?.(it)}
+                      disabled={Number(it.qty || 0) <= 0}
+                      title={Number(it.qty || 0) <= 0 ? "Out of stock" : "Add to cart"}
+                    >
+                      Add
+                    </button>
+
+                    <button className="link danger" onClick={() => onDelete?.(it.id)} type="button">
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))

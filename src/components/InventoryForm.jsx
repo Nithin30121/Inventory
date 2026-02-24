@@ -1,13 +1,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-const categories = ["Chocolate", "Electronics", "Stationery", "Misc"];
+const categories = ["Milk Chocolate", "Dark Chocolate", "Chocolate Bars", "Candy"];
 const statuses = ["In Stock", "Low Stock", "Out of Stock"];
 
 export default function InventoryForm({ open, onClose, onSave }) {
   const [form, setForm] = useState({
     name: "",
-    category: "Chocolate",
+    category: "Milk Chocolate",
     qty: "",
     price: "",
     status: "In Stock",
@@ -19,7 +19,7 @@ export default function InventoryForm({ open, onClose, onSave }) {
     if (open) {
       setForm({
         name: "",
-        category: "Chocolate",
+        category: "Milk Chocolate",
         qty: "",
         price: "",
         status: "In Stock",

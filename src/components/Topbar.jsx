@@ -2,7 +2,17 @@ export default function Topbar({ active, query, setQuery, onLogout }) {
   return (
     <header className="topbar">
       <div className="topbar-left">
-        <div className="crumb">{active === "dashboard" ? "Dashboard" : "Items"}</div>
+      <div className="crumb">
+  {active === "dashboard"
+    ? "Dashboard"
+    : active === "items"
+    ? "Items"
+    : active === "analytics"
+    ? "Analytics"
+    : active === "guidelines"
+    ? "Guidelines"
+    : "Contact Info"}
+</div>
       </div>
 
       <div className="topbar-center">
