@@ -35,21 +35,9 @@ export default function ItemsTable({ items, onDelete, compact, onAddToCart }) {
                   </span>
                 </td>
                 <td className="right">
-                  <div className="row-actions">
-                    <button
-                      className="link"
-                      type="button"
-                      onClick={() => onAddToCart?.(it)}
-                      disabled={Number(it.qty || 0) <= 0}
-                      title={Number(it.qty || 0) <= 0 ? "Out of stock" : "Add to cart"}
-                    >
-                      Add
-                    </button>
-
-                    <button className="link danger" onClick={() => onDelete?.(it.id)} type="button">
-                      Delete
-                    </button>
-                  </div>
+                  <button className="link danger" onClick={() => onDelete?.(it.id)} type="button">
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))

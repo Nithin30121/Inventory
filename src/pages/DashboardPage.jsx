@@ -4,6 +4,7 @@ import Topbar from "../components/Topbar";
 import StatCard from "../components/StatCard";
 import ItemsTable from "../components/ItemsTable";
 import seedInventory from "../data/seedInventory";
+import catalogChocolates from "../data/catalogChocolates";
 import InventoryForm from "../components/InventoryForm";
 import AdvancedAnalytics from "../components/AdvancedAnalytics";
 import ProductCard from "../components/ProductCard";
@@ -74,6 +75,31 @@ function handleAddItem(newItem) {
     },
     ...prev,
   ]);
+}
+
+function addCatalogItemToInventory(product) {
+  const exists = items.some((it) => it.sku === product.sku);
+
+  if (exists) {
+    setActive("items"); // route anyway
+    return;
+  }
+
+  const created = {
+    id: `CHOC-${Math.floor(1000 + Math.random() * 9000)}`,
+    sku: product.sku, // ✅ link to catalog
+    name: product.name,
+    category: product.category || "Chocolate",
+    qty: product.defaultQty ?? 1,
+    price: product.price ?? 0,
+    status: (product.defaultQty ?? 1) <= 5 ? "Low Stock" : "In Stock",
+    rating: product.rating,
+    reviews: product.reviews,
+    desc: product.desc,
+  };
+
+  setItems((prev) => [created, ...prev]);
+  setActive("items"); // ✅ route to Items
 }
 
 function addToCart(item) {
@@ -223,35 +249,35 @@ const cartTotal = useMemo(
           <>
             <section className="items-header">
               <div>
-                <h2 className="h2">Cart</h2>
-                <p className="muted">Add chocolates and manage quantities here.</p>
-              </div>
-              <div className="cart-total">
-                Total: <span className="mono">₹{cartTotal.toFixed(2)}</span>
+                <h2 className="h2">Chocolate Catalog</h2>
+                <p className="muted">Preset items. Click "Add to Items" to add them into inventory.</p>
               </div>
             </section>
 
-            {cartItems.length === 0 ? (
-              <section className="shop-grid">
-                {items.slice(0, 6).map((it) => (
-                  <ProductCard key={it.id} item={it} mode="catalog" qty={0} onAdd={addToCart} />
-                ))}
-              </section>
-            ) : (
-              <section className="shop-grid">
-                {cartItems.map((it) => (
+            <section className="panel big neon">
+              <div className="panel-title">Available Products</div>
+              <div className="panel-body">
+                <section className="shop-grid">
+                  {catalogChocolates.map((p) => {
+                const alreadyInInventory = items.some((it) => it.sku === p.sku);
+
+                return (
                   <ProductCard
-                    key={it.id}
-                    item={it}
-                    mode="cart"
-                    qty={it.cartQty}
-                    onInc={incCart}
-                    onDec={decCart}
-                    onRemove={removeFromCart}
+                    key={p.sku}
+                    item={{
+                      ...p,
+                      qty: alreadyInInventory ? 0 : (p.defaultQty ?? 1),
+                    }}
+                    mode="catalog"
+                    onAdd={() => addCatalogItemToInventory(p)}
+                    disabled={alreadyInInventory}
+                    ctaText={alreadyInInventory ? "Added" : "Add to Items"}
                   />
-                ))}
-              </section>
-            )}
+                  );
+                })}
+                </section>
+              </div>
+            </section>
           </>
         ) : active === "analytics" ? (
           <>
@@ -274,7 +300,7 @@ const cartTotal = useMemo(
               </div>
             </section>
 
-            <section className="panel big">
+            <section className="panel big neon">
               <div className="panel-title">Recent Activity</div>
               <div className="panel-body">
                 {activity.length === 0 ? (
@@ -302,7 +328,7 @@ const cartTotal = useMemo(
               </div>
             </section>
 
-            <section className="panel big">
+            <section className="panel big neon">
               <div className="panel-title">Inventory Guidelines</div>
               <div className="panel-body">
                  <div className="guidelines-content">
@@ -431,7 +457,7 @@ const cartTotal = useMemo(
               </div>
             </section>
 
-            <section className="panel big">
+            <section className="panel big neon">
               <div className="panel-title">Support</div>
               <div className="panel-body">
                 <div className="contact-grid">

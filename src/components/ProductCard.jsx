@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ProductCard({ item, mode = "catalog", qty = 0, onAdd, onInc, onDec, onRemove }) {
+export default function ProductCard({ item, mode = "catalog", qty = 0, onAdd, onInc, onDec, onRemove, disabled = false, ctaText = "Add to Items" }) {
   const price = Number(item.price || 0);
   const stock = Number(item.qty || 0);
   const rating = Number(item.rating || 4.6);
@@ -64,8 +64,8 @@ export default function ProductCard({ item, mode = "catalog", qty = 0, onAdd, on
           </div>
         ) : (
           <div className="shop-actions">
-            <button className="shop-add" onClick={() => onAdd?.(item)} type="button" disabled={!canAdd}>
-              {stock <= 0 ? "Out of Stock" : "Add to Cart"}
+            <button className="shop-add" onClick={() => onAdd?.(item)} type="button" disabled={disabled}>
+              {ctaText}
             </button>
             <div className="shop-stock">Stock: {stock}</div>
           </div>
