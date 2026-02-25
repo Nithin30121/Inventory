@@ -8,6 +8,7 @@ const catalogChocolates = [
     rating: 4.7,
     reviews: 312,
     desc: "70% cocoa. Rich & bold. Best seller.",
+    imageUrl: "https://images.unsplash.com/photo-1527515545081-5db817172677?auto=format&fit=crop&w=900&q=80",
   },
   {
     sku: "CAT-CHOC-002",
@@ -18,6 +19,7 @@ const catalogChocolates = [
     rating: 4.5,
     reviews: 278,
     desc: "Creamy milk chocolate. Smooth finish.",
+    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80",
   },
   {
     sku: "CAT-CHOC-003",
@@ -28,6 +30,7 @@ const catalogChocolates = [
     rating: 4.6,
     reviews: 190,
     desc: "Soft center truffles with hazelnut crunch.",
+    imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=80",
   },
   {
     sku: "CAT-CHOC-004",
@@ -38,6 +41,7 @@ const catalogChocolates = [
     rating: 4.4,
     reviews: 145,
     desc: "Perfect for baking, drinks, and desserts.",
+    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80",
   },
   {
     sku: "CAT-CHOC-005",
@@ -48,6 +52,7 @@ const catalogChocolates = [
     rating: 4.8,
     reviews: 410,
     desc: "A mix of dark, milk, and nut chocolates.",
+    imageUrl: "https://images.unsplash.com/photo-1481391032119-d89fee407e44?auto=format&fit=crop&w=900&q=80",
   },
   {
     sku: "CAT-CHOC-006",
@@ -58,6 +63,7 @@ const catalogChocolates = [
     rating: 4.3,
     reviews: 128,
     desc: "Sweet bite-size white chocolate pieces.",
+    imageUrl: "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=900&q=80",
   },
 ];
 
