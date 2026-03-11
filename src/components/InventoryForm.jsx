@@ -1,32 +1,43 @@
-
 import { useEffect, useMemo, useState } from "react";
 
 const categories = ["Milk Chocolate", "Dark Chocolate", "Chocolate Bars", "Candy"];
 const statuses = ["In Stock", "Low Stock", "Out of Stock"];
 
-export default function InventoryForm({ open, onClose, onSave }) {
-  const [form, setForm] = useState({
-    name: "",
-    category: "Milk Chocolate",
-    qty: "",
-    price: "",
-    status: "In Stock",
-  });
+const emptyForm = {
+  name: "",
+  category: "Milk Chocolate",
+  qty: "",
+  price: "",
+  status: "In Stock",
+};
 
+export default function InventoryForm({
+  open,
+  onClose,
+  onSave,
+  initialValues,
+  mode = "add",
+}) {
+  const resolvedInitialValues = useMemo(
+    () => ({
+      name: initialValues?.name ?? "",
+      category: initialValues?.category ?? "Milk Chocolate",
+      qty: initialValues?.qty ?? "",
+      price: initialValues?.price ?? "",
+      status: initialValues?.status ?? "In Stock",
+    }),
+    [initialValues]
+  );
+
+  const [form, setForm] = useState(emptyForm);
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setForm({
-        name: "",
-        category: "Milk Chocolate",
-        qty: "",
-        price: "",
-        status: "In Stock",
-      });
+      setForm(resolvedInitialValues);
       setTouched(false);
     }
-  }, [open]);
+  }, [open, resolvedInitialValues]);
 
   const errors = useMemo(() => {
     const e = {};
@@ -46,10 +57,12 @@ export default function InventoryForm({ open, onClose, onSave }) {
   }, [form]);
 
   const isValid = Object.keys(errors).length === 0;
+  const modalTitle = mode === "edit" ? "Edit Item" : "Add Item";
+  const submitLabel = mode === "edit" ? "Save Changes" : "Add Item";
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm((p) => ({ ...p, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   }
 
   function submit(e) {
@@ -74,9 +87,9 @@ export default function InventoryForm({ open, onClose, onSave }) {
     <div className="modal-backdrop" role="dialog" aria-modal="true">
       <div className="modal">
         <div className="modal-head">
-          <div className="modal-title">Add Item</div>
-          <button className="icon-btn" onClick={onClose} type="button">
-            ✕
+          <div className="modal-title">{modalTitle}</div>
+          <button className="icon-btn" onClick={onClose} type="button" aria-label="Close modal">
+            X
           </button>
         </div>
 
@@ -96,9 +109,9 @@ export default function InventoryForm({ open, onClose, onSave }) {
             <div className="mfield">
               <label>Category</label>
               <select name="category" value={form.category} onChange={handleChange}>
-                {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
                   </option>
                 ))}
               </select>
@@ -108,9 +121,9 @@ export default function InventoryForm({ open, onClose, onSave }) {
             <div className="mfield">
               <label>Status</label>
               <select name="status" value={form.status} onChange={handleChange}>
-                {statuses.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
+                {statuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
                   </option>
                 ))}
               </select>
@@ -149,7 +162,7 @@ export default function InventoryForm({ open, onClose, onSave }) {
               Cancel
             </button>
             <button type="submit" className="btn" disabled={!isValid}>
-              Add Item
+              {submitLabel}
             </button>
           </div>
         </form>

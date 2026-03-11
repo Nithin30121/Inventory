@@ -41,7 +41,7 @@ const catalogChocolates = [
     rating: 4.4,
     reviews: 145,
     desc: "Perfect for baking, drinks, and desserts.",
-    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?auto=format&fit=crop&w=900&q=80",
   },
   {
     sku: "CAT-CHOC-005",
@@ -63,7 +63,7 @@ const catalogChocolates = [
     rating: 4.3,
     reviews: 128,
     desc: "Sweet bite-size white chocolate pieces.",
-    imageUrl: "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=900&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1511381939415-e44015466834?auto=format&fit=crop&w=900&q=80",
   },
 ];
 

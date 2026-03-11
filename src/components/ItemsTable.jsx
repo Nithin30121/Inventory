@@ -1,4 +1,4 @@
-export default function ItemsTable({ items, onDelete, compact, onAddToCart }) {
+export default function ItemsTable({ items, onDelete, onEdit, compact, onAddToCart }) {
   return (
     <div className={`table-wrap ${compact ? "compact" : ""}`}>
       <table className="table">
@@ -35,9 +35,14 @@ export default function ItemsTable({ items, onDelete, compact, onAddToCart }) {
                   </span>
                 </td>
                 <td className="right">
-                  <button className="link danger" onClick={() => onDelete?.(it.id)} type="button">
-                    Delete
-                  </button>
+                  <div className="row-actions">
+                    <button className="link" onClick={() => onEdit?.(it)} type="button">
+                      Edit
+                    </button>
+                    <button className="link danger" onClick={() => onDelete?.(it.id)} type="button">
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))

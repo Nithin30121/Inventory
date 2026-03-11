@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import StatCard from "../components/StatCard";
@@ -8,16 +8,51 @@ import catalogChocolates from "../data/catalogChocolates";
 import InventoryForm from "../components/InventoryForm";
 import AdvancedAnalytics from "../components/AdvancedAnalytics";
 import ProductCard from "../components/ProductCard";
+import GraphPanel from "../components/GraphPanel";
+import ReportsPanel from "../components/ReportsPanel";
+import CalendarPanel from "../components/CalendarPanel";
+
+const STORAGE_KEYS = {
+  items: "finale.inventory.items",
+  activity: "finale.inventory.activity",
+  cart: "finale.inventory.cart",
+};
+
+function readStoredJson(key, fallback) {
+  if (typeof window === "undefined") return fallback;
+
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 export default function DashboardPage({ onLogout }) {
   const [openAdd, setOpenAdd] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [active, setActive] = useState("dashboard"); // "dashboard" | "items" | "analytics" | "activity" | "guidelines" | "contact"
-  const [items, setItems] = useState(seedInventory);
+  const [items, setItems] = useState(() => readStoredJson(STORAGE_KEYS.items, seedInventory));
   const [query, setQuery] = useState("");
-  const [activity, setActivity] = useState([
-  { id: 1, text: "System initialized", time: new Date().toLocaleString() },
-]);
-  const [cart, setCart] = useState([]); // { id, cartQty }
+  const [activity, setActivity] = useState(() =>
+    readStoredJson(STORAGE_KEYS.activity, [
+      { id: 1, text: "System initialized", time: new Date().toLocaleString() },
+    ])
+  );
+  const [cart, setCart] = useState(() => readStoredJson(STORAGE_KEYS.cart, [])); // { id, cartQty }
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.items, JSON.stringify(items));
+  }, [items]);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.activity, JSON.stringify(activity));
+  }, [activity]);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cart));
+  }, [cart]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -71,6 +106,41 @@ function handleAddItem(newItem) {
     {
       id: Date.now(),
       text: `Item added: ${created.name} (${created.id})`,
+      time: new Date().toLocaleString(),
+    },
+    ...prev,
+  ]);
+}
+
+function handleStartEdit(item) {
+  setEditingItem(item);
+  setOpenAdd(false);
+  setActive("items");
+}
+
+function handleEditItem(updatedItem) {
+  if (!editingItem) return;
+
+  const nextQty = Number(updatedItem.qty || 0);
+
+  setItems((prev) =>
+    prev.map((item) => (item.id === editingItem.id ? { ...item, ...updatedItem } : item))
+  );
+
+  setCart((prev) =>
+    prev
+      .map((entry) =>
+        entry.id === editingItem.id
+          ? { ...entry, cartQty: Math.min(entry.cartQty, nextQty) }
+          : entry
+      )
+      .filter((entry) => entry.cartQty > 0)
+  );
+
+  setActivity((prev) => [
+    {
+      id: Date.now(),
+      text: `Item updated: ${updatedItem.name} (${editingItem.id})`,
       time: new Date().toLocaleString(),
     },
     ...prev,
@@ -204,7 +274,14 @@ const cartTotal = useMemo(
                   <button className="btn" onClick={() => setActive("items")} type="button">
                     Go to Items
                   </button>
-                  <button className="btn btn-dark" onClick={() => setOpenAdd(true)} type="button">
+                  <button
+                    className="btn btn-dark"
+                    onClick={() => {
+                      setActive("items");
+                      setOpenAdd(true);
+                    }}
+                    type="button"
+                  >
                     + Add Item
                   </button>
                 </div>
@@ -214,7 +291,13 @@ const cartTotal = useMemo(
             <section className="panel big">
               <div className="panel-title">Current Items (Preview)</div>
               <div className="panel-body">
-                <ItemsTable items={filtered.slice(0, 5)} onDelete={handleDelete} onAddToCart={addToCart} compact />
+                <ItemsTable
+                  items={filtered.slice(0, 5)}
+                  onDelete={handleDelete}
+                  onEdit={handleStartEdit}
+                  onAddToCart={addToCart}
+                  compact
+                />
               </div>
             </section>
           </>
@@ -235,11 +318,11 @@ const cartTotal = useMemo(
             <section className="panel big">
               <div className="panel-title">All Items</div>
               <div className="panel-body">
-                <ItemsTable items={filtered} onDelete={handleDelete} onAddToCart={addToCart} />
-                <InventoryForm
-                  open={openAdd}
-                  onClose={() => setOpenAdd(false)}
-                  onSave={handleAddItem}
+                <ItemsTable
+                  items={filtered}
+                  onDelete={handleDelete}
+                  onEdit={handleStartEdit}
+                  onAddToCart={addToCart}
                 />
               </div>
             </section>
@@ -290,6 +373,39 @@ const cartTotal = useMemo(
             </section>
 
             <AdvancedAnalytics items={items} />
+          </>
+        ) : active === "graph" ? (
+          <>
+            <section className="items-header">
+              <div>
+                <h2 className="h2">Graph</h2>
+                <p className="muted">Visual weekly trend summary in the current dashboard style.</p>
+              </div>
+            </section>
+
+            <GraphPanel items={items} />
+          </>
+        ) : active === "reports" ? (
+          <>
+            <section className="items-header">
+              <div>
+                <h2 className="h2">Reports</h2>
+                <p className="muted">Operational summaries for stock value, category mix, and restock risk.</p>
+              </div>
+            </section>
+
+            <ReportsPanel items={items} />
+          </>
+        ) : active === "calendar" ? (
+          <>
+            <section className="items-header">
+              <div>
+                <h2 className="h2">Calendar</h2>
+                <p className="muted">Monthly schedule for stock reviews, reports, and inventory focus items.</p>
+              </div>
+            </section>
+
+            <CalendarPanel items={items} activity={activity} />
           </>
         ) : active === "activity" ? (
           <>
@@ -463,15 +579,15 @@ const cartTotal = useMemo(
                 <div className="contact-grid">
                   <div className="contact-row">
                     <span className="muted">Owner</span>
-                    <span>Alex (Manager)</span>
+                    <span>Monkey D luffy</span>
                   </div>
                   <div className="contact-row">
                     <span className="muted">Email</span>
-                    <span>support@inventoryapp.com</span>
+                    <span>strawhat@gmail.com</span>
                   </div>
                   <div className="contact-row">
                     <span className="muted">Phone</span>
-                    <span>+1 (000) 000-0000</span>
+                    <span>9849470056</span>
                   </div>
                   <div className="contact-row">
                     <span className="muted">Hours</span>
@@ -483,8 +599,17 @@ const cartTotal = useMemo(
           </>
           
         )}
-        
-        
+
+        <InventoryForm
+          open={openAdd || Boolean(editingItem)}
+          onClose={() => {
+            setOpenAdd(false);
+            setEditingItem(null);
+          }}
+          onSave={editingItem ? handleEditItem : handleAddItem}
+          initialValues={editingItem}
+          mode={editingItem ? "edit" : "add"}
+        />
       </main>
     </div>
 
